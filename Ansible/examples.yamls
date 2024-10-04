@@ -1,0 +1,335 @@
+[root@master ansible]# pwd 
+/ansible
+[root@master ansible]# ls -ltr 
+total 60
+-rw-r--r--. 1 root root 371 Oct  3 09:59 play1.yaml
+-rw-r--r--. 1 root root 557 Oct  3 10:07 play-Multilne.yaml
+-rw-r--r--. 1 root root 755 Oct  3 10:18 filecallveriable.yaml
+-rw-r--r--. 1 root root  64 Oct  3 10:18 variables.yaml
+-rw-r--r--. 1 root root 213 Oct  3 10:36 list.yaml
+-rw-r--r--. 1 root root 776 Oct  3 10:59 multilist.yaml
+-rw-r--r--. 1 root root  19 Oct  3 11:05 example6.yaml
+-rw-r--r--. 1 root root 217 Oct  3 12:46 variables1.yaml
+-rw-r--r--. 1 root root 602 Oct  3 12:47 loop.yaml
+-rw-r--r--. 1 root root 579 Oct  4 07:18 httpd.yaml
+-rw-r--r--. 1 root root   1 Oct  4 08:00 docker.yaml
+-rw-r--r--. 1 root root 241 Oct  4 09:05 t1.j2
+-rw-r--r--. 1 root root 230 Oct  4 09:09 t1.yaml
+-rw-r--r--. 1 root root 967 Oct  4 11:02 dockerinstall.yaml
+-rw-r--r--. 1 root root 107 Oct  4 13:40 r1.yaml
+[root@master ansible]# git init 
+hint: Using 'master' as the name for the initial branch. This default branch name
+hint: is subject to change. To configure the initial branch name to use in all
+hint: of your new repositories, which will suppress this warning, call:
+hint: 
+hint: 	git config --global init.defaultBranch <name>
+hint: 
+hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+hint: 'development'. The just-created branch can be renamed via this command:
+hint: 
+hint: 	git branch -m <name>
+Initialized empty Git repository in /ansible/.git/
+[root@master ansible]# cat play1.yaml
+---
+- name: learning variables
+  hosts: web 
+  vars: 
+    uname: user1
+    uid: 3001
+    lang: /bin/bash
+    a: 10
+    b: 20
+ 
+  tasks: 
+  - name: create user "{{ uname }}"
+    user: 
+      name: "{{ uname}}"
+      uid: "{{ uid }}"
+      shell: "{{ lang }}"
+      state: present 
+  - name: add two numbers
+    debug: 
+      msg: the sub of a and b is "{{ a +b }}" 
+ 
+...
+[root@master ansible]# cat play-Multilne.yaml
+---
+- name: learning variables
+  hosts: web 
+  vars: 
+    uname: user1
+    uid: 3001
+    lang: /bin/bash
+    a: 10
+    b: 20
+ 
+  tasks: 
+  - name: create user "{{ uname }}"
+    user: 
+      name: "{{ uname}}"
+      uid: "{{ uid }}"
+      shell: "{{ lang }}"
+      state: present 
+  - name: add two numbers
+    debug: 
+      msg: 
+        - the sub of a and b is "{{ a +b }}"
+        - the sub of {{a}}  and {{b}} is "{{ a - b }}"
+        - the mul of {{a}}  and {{b}} is "{{ a * b }}"
+        - the div of {{a}}  and {{b}} is "{{ a / b }}"
+            
+...
+[root@master ansible]# cat filecallveriable.yaml
+- name: learning variables
+  hosts: web
+  vars:
+    uname1: user4
+  vars_files:
+  - "variables.yaml"
+
+  tasks:
+  - name: create user "{{ uname1 }}"
+    user:
+      name: "{{ uname1 }}"
+      uid: "{{ uid }}"
+      shell: "{{ lang }}"
+  - name: create user "{{ uname }}"
+    user:
+      name: "{{ uname }}"
+      state: present
+  - name: add two numbers
+    debug:
+      msg:
+        - the sum of {{a}}  and {{b}} is "{{ a + b }}"
+        - the sub of {{a}}  and {{b}} is "{{ a - b }}"
+        - the mul of {{a}}  and {{b}} is "{{ a * b }}"
+        - the div of {{a}}  and {{b}} is "{{ a / b }}"
+
+  - name: add two numbers
+    debug:
+      msg: |
+            I like vadapav
+            I like samosa
+            I like burger
+            I like pizza
+
+...
+[root@master ansible]# cat variables.yaml
+uname: user2
+uname: user5
+uid: 3002
+lang: /bin/bash
+a: 20
+b: 20
+[root@master ansible]# cat list.yaml
+---
+- name: learning list type variables
+  hosts: web
+  vars: 
+    - a1: user1
+    - b1: user2
+    - c1: user3
+
+  tasks:
+  -  name: print the values 
+     debug: 
+       msg: |
+         valune of a1 is "{{ a1 }}"
+[root@master ansible]# cat  multilist.yaml
+---
+- name: learning list type variables
+  hosts: web
+  vars:
+    names:
+    - a1
+    - b1
+    - c1
+#list example
+    age: [23,32,12]
+
+    city:
+      capital: London
+      fin-cap: Mumbai
+      picnic-spot: Himalayas
+# dictionary example
+    servers: {server1: email, server2: db1}
+
+
+  tasks:
+  - name: print the values
+    debug:
+      msg: |
+        The age of  "{{ names[0] }}" is "{{ age[0] }}"
+        The age of  "{{ names[1] }}" is "{{ age[1] }}"
+  - name: print the cities
+    debug:
+      msg:
+       - The capital city is "{{ city['capital'] }}"
+       - The capital city is "{{ city.capital }}"
+       - friends , trying to print cities info "{{ city  }}"
+       - I have some servers, "{{ servers }}"
+       - I have email servers, "{{ servers.server1 }}"
+
+
+
+...
+[root@master ansible]# cat example6.yaml
+___
+...wq!
+q!
+
+[root@master ansible]# cat variables1.yaml
+price:
+  name: user11
+  uid: 30011
+  shell: /bin/bash
+user2:
+  name: user22
+  uid: 30022
+  shell: /bin/sh
+user3:
+  name: user333
+  uid: 300332
+  shell: /bin/ksh
+user4:
+  name: user343
+  uid: 300342
+  shell: /bin/bash
+[root@master ansible]# cat loop.yaml
+---
+- name: adding users
+  hosts: web
+  vars_files:
+  - "variables1.yaml"
+  tasks:
+  - name: create user {{price['name'] }}
+    user:
+      name: "{{price['name']}}"
+      uid: "{{price.uid}}"
+      shell: "{{price.shell}}"
+  - name: adding user {{ item }}
+    user:
+      name : "{{ item }}"
+      state: present
+    loop:
+      - A1
+      - A2
+      - A3
+  - name: create user
+    user:
+      name: "{{ item.name }}"
+      uid: "{{ item.uid }}"
+      shell: "{{ item.shell }}"
+      state: present
+    loop:
+      - "{{ price }}"
+      - "{{ user2 }}"
+      - "{{ user3 }}"
+      - "{{ user4 }}"
+...
+[root@master ansible]# cat  httpd.yaml
+---
+- name: learn conditionals
+  hosts: web
+  tasks:
+  - name: install packages
+    dnf:
+      name: httpd
+      state: present
+    loop: "{{ansible_mounts}}"
+    when: item.mount == "/" and item.size_available > 3000000 and item.fstype == "xfs"
+  - name: enable service
+    service:
+      name: httpd
+      enabled: true
+      state: started
+  - name: create index.html file
+    blockinfile:
+      path: /var/www/html/index.html
+      create: true
+      block: |
+             Hello friends, learning ansible is a fun.
+             we will use similar commands to install docker
+[root@master ansible]# cat docker.yaml
+
+[root@master ansible]# cat t1.j2
+This is the system {{ ansible_facts['fqdn'] }}.
+
+This is a {{ ansible_facts['distribution'] }} version
+{{ ansible_facts['distribution_version'] }} system.
+
+Only use this system with permission.
+
+Please report issues to: {{ system_owner }}.
+
+[root@master ansible]# cat t1.yaml
+--- 
+- name: working with jinga
+  hosts: all
+  vars: 
+   system_owner: test@gmail.com
+  tasks:
+  - name: changing motd files  in all servers 
+    template:
+      src: t1.j2
+      dest: /etc/motd
+      owner: root
+      mode: 0666
+[root@master ansible]# cat dockerinstall.yaml
+---
+- name: install docker
+  hosts: web
+  tasks:
+    - name: remove repository
+      yum_repository:
+        name: dockerrepo
+        state: absent
+
+    - name: yum-clean-metadata
+      command: yum clean metadata
+
+    - name: install base packages
+      dnf:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - curl
+        - yum-utils
+        - tree
+
+    - name: add repo
+      get_url:
+        url: https://download.docker.com/linux/rhel/docker-ce.repo
+        dest: /etc/yum.repos.d/docker.repo
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: install docker packages
+      dnf:
+        name: "{{ item }}"
+        state: present
+        update_cache: true
+      loop:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+        - docker-buildx-plugin
+        - docker-compose-plugin
+
+    - name: start docker service
+      service:
+        name: docker
+        enabled: true
+        state: started
+...
+[root@master ansible]# cat r1.yaml
+---
+- name: calling role
+  hosts: db
+  vars:
+    system_owner: test2@gmail.com
+  roles:
+    - project1
+...
+[root@master ansible]# 
